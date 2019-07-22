@@ -1,61 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ACM.BL;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ACM.BL
+namespace ACM.BLTest
 {
-    public class CustomerRepository
+    [TestClass]
+    public class CustomerRepositoryTest
     {
-        public CustomerRepository()
+        [TestMethod]
+        public void RetrieveValid()
         {
-            addressRepository = new AddressRepository();
+            var customerRepository = new CustomerRepository();
+            var expected = new Customer(1)
+            {
+                EmailAddress = "fbaggins@hobbiton.me",
+                FirstName = "Frodo",
+                LastName = "Baggins"
+            };
+
+            var actual = customerRepository.Retrieve(1);
+
+            Assert.AreEqual(expected.CustomerId, actual.CustomerId);
+            Assert.AreEqual(expected.EmailAddress, actual.EmailAddress);
+            Assert.AreEqual(expected.FirstName, actual.FirstName);
+            Assert.AreEqual(expected.LastName, actual.LastName);
         }
 
-        private AddressRepository addressRepository { get; set; }
-
-        public Customer Retrieve(int customerId)
+        [TestMethod]
+        public void RetrieveExistingWithAddress()
         {
-
-            Customer customer = new Customer(customerId);
-
-            if (customerId == 1)
+            var customerRepository = new CustomerRepository();
+            var expected = new Customer(1)
             {
-                customer.EmailAddress = "fbaggins@hobbiton.me";
-                customer.FirstName = "Frodo";
-                customer.LastName = "Baggins";
-                customer.AddressList = addressRepository.RetrieveByCustomerId(customerId).
-                                            ToList();
-            }
-            return customer;
-        }
+                EmailAddress = "fbaggins@hobbiton.me",
+                FirstName = "Frodo",
+                LastName = "Baggins",
+                AddressList = new List<Address>()
+                    {
+                        new Address()
+                        {
+                            AddressType = 1,
+                            StreetLine1 = "Bag End",
+                            StreetLine2 = "Bagshot row",
+                            City = "Hobbiton",
+                            State = "Shire",
+                            Country = "Middle Earth",
+                            PostalCode = "144"
+                        },
+                        new Address()
+                        {
+                            AddressType = 2,
+                            StreetLine1 = "Green Dragon",
+                            City = "Bywater",
+                            State = "Shire",
+                            Country = "Middle Earth",
+                            PostalCode = "146"
+                        }
+                    }
+            };
 
-        public bool Save(Customer customer)
-        {
-            var success = true;
+            var actual = customerRepository.Retrieve(1);
 
-            if (customer.HasChanges)
+            Assert.AreEqual(expected.CustomerId, actual.CustomerId);
+            Assert.AreEqual(expected.EmailAddress, actual.EmailAddress);
+            Assert.AreEqual(expected.FirstName, actual.FirstName);
+            Assert.AreEqual(expected.LastName, actual.LastName);
+
+            for (int i = 0; i < 1; i++)
             {
-                if (customer.IsValid)
-                {
-                    if (customer.IsNew)
-                    {
-                        // Call an Insert Stored Procedure
-
-                    }
-                    else
-                    {
-                        // Call an Update Stored Procedure
-                    }
-                }
-                else
-                {
-                    success = false;
-                }
+                Assert.AreEqual(expected.AddressList[i].AddressType, actual.AddressList[i].AddressType);
+                Assert.AreEqual(expected.AddressList[i].StreetLine1, actual.AddressList[i].StreetLine1);
+                Assert.AreEqual(expected.AddressList[i].City, actual.AddressList[i].City);
+                Assert.AreEqual(expected.AddressList[i].State, actual.AddressList[i].State);
+                Assert.AreEqual(expected.AddressList[i].Country, actual.AddressList[i].Country);
+                Assert.AreEqual(expected.AddressList[i].PostalCode, actual.AddressList[i].PostalCode);
             }
-            return success;
         }
 
     }
+
 }

@@ -1,52 +1,72 @@
-﻿using System;
+﻿using ACM.BL;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ACM.BL
+namespace ACM.BLTest
 {
-    public class ProductRepository
+    [TestClass()]
+    public class ProductRepositoryTest
     {
-
-        public Product Retrieve(int productId)
+        [TestMethod()]
+        public void RetrieveTest()
         {
-
-            Product product = new Product(productId);
-
-            if (productId == 2)
+            //-- Arrange
+            var productRepository = new ProductRepository();
+            var expected = new Product(2)
             {
-                product.ProductName = "Sunflowers";
-                product.ProductDescription = "Assorted Size Set of 4 Bright Yellow Mini Sunflowers";
-                product.CurrentPrice = 15.96M;
-            }
+                CurrentPrice = 15.96M,
+                ProductDescription = "Assorted Size Set of 4 Bright Yellow Mini Sunflowers",
+                ProductName = "Sunflowers"
+            };
 
-            Object myObject = new Object();
-            Console.WriteLine($"Object: {myObject.ToString()}");
-            Console.WriteLine($"Product: {product.ToString()}");
-            return product;
+            //-- Act
+            var actual = productRepository.Retrieve(2);
+
+            //-- Assert
+            Assert.AreEqual(expected.CurrentPrice, actual.CurrentPrice);
+            Assert.AreEqual(expected.ProductDescription, actual.ProductDescription);
+            Assert.AreEqual(expected.ProductName, actual.ProductName);
         }
 
-        public bool Save(Product product)
+        [TestMethod()]
+        public void SaveTestValid()
         {
-            var success = true;
-
-            if (product.HasChanges)
+            //-- Arrange
+            var productRepository = new ProductRepository();
+            var updatedProduct = new Product(2)
             {
-                if (product.IsValid)
-                {
-                    if (product.IsNew)
-                    {
-                        // Call an Insert Stored Procedure
-                    }
-                    else
-                    {
-                        // Call an Update Stored Procedure
-                    }
-                }
-                else
-                {
-                    success = false;
-                }
-            }
-            return success;
+                CurrentPrice = 18M,
+                ProductDescription = "Assorted Size Set of 4 Bright Yellow Mini Sunflowers",
+                ProductName = "Sunflowers",
+                HasChanges = true
+            };
+
+            //-- Act
+            var actual = productRepository.Save(updatedProduct);
+
+            //-- Assert
+            Assert.AreEqual(true, actual);
         }
+
+        [TestMethod()]
+        public void SaveTestMissingPrice()
+        {
+            //-- Arrange
+            var productRepository = new ProductRepository();
+            var updatedProduct = new Product(2)
+            {
+                CurrentPrice = null,
+                ProductDescription = "Assorted Size Set of 4 Bright Yellow Mini Sunflowers",
+                ProductName = "Sunflowers",
+                HasChanges = true
+            };
+
+            //-- Act
+            var actual = productRepository.Save(updatedProduct);
+
+            //-- Assert
+            Assert.AreEqual(false, actual);
+        }
+
 
     }
 }

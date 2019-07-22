@@ -1,49 +1,26 @@
-﻿using System;
+﻿using ACM.BL;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
-namespace ACM.BL
+namespace ACM.BLTest
 {
-    public class OrderRepository
+    [TestClass()]
+    public class OrderRepositoryTests
     {
-
-        public Order Retrieve(int orderId)
+        [TestMethod()]
+        public void RetrieveOrderDisplayTest()
         {
 
-            Order order = new Order(orderId);
-
-            if (orderId == 10)
+            var orderRepository = new OrderRepository();
+            var expected = new Order(10)
             {
-                order.OrderDate = new DateTimeOffset(DateTime.Now.Year, 4, 14, 10, 00, 00,
-                                                     new TimeSpan(7, 0, 0));
-            }
+                OrderDate = new DateTimeOffset(DateTime.Now.Year, 4, 14, 10, 00, 00,
+                                             new TimeSpan(7, 0, 0)),
+            };
 
-            return order;
+            var actual = orderRepository.Retrieve(10);
+
+            Assert.AreEqual(expected.OrderDate, actual.OrderDate);
         }
-
-        public bool Save(Order order)
-        {
-            var success = true;
-
-            if (order.HasChanges)
-            {
-                if (order.IsValid)
-                {
-                    if (order.IsNew)
-                    {
-                        // Call an Insert Stored Procedure
-
-                    }
-                    else
-                    {
-                        // Call an Update Stored Procedure
-                    }
-                }
-                else
-                {
-                    success = false;
-                }
-            }
-            return success;
-        }
-
     }
 }
